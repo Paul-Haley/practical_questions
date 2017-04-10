@@ -3,7 +3,7 @@ from sys import argv
 import sys
 from queue import *
 
-version = [0, 2, 1]
+version = [0, 2, 2]
 
 def readEnrollment(students, arg):
     file = open(arg)
@@ -61,11 +61,11 @@ class InQueue(Queue):
                 return i
         return -1
     
-print("""Welcome to the Practical Questions tool for %s.
+print("""Welcome to the Practical Questions tool!
       
       This program was developed and is maintained by Paul Haley.
       
-      Version: %d.%d.%d""" % (argv[0], version[0], version[1], version[2]))
+      Version: %d.%d.%d""" % (version[0], version[1], version[2]))
 
 questions = InQueue(70)
 student_number = ""
