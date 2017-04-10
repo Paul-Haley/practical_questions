@@ -3,6 +3,8 @@ from sys import argv
 import sys
 from queue import *
 
+version = [0, 2, 1]
+
 def readEnrollment(students, arg):
     file = open(arg)
     practical = ""
@@ -63,8 +65,7 @@ print("""Welcome to the Practical Questions tool for %s.
       
       This program was developed and is maintained by Paul Haley.
       
-      Version: 0.2
-      """ % argv[0])
+      Version: %d.%d.%d""" % (argv[0], version[0], version[1], version[2]))
 
 questions = InQueue(70)
 student_number = ""
@@ -73,7 +74,7 @@ while (True):
     student_number = input("\nPlease enter your student number: ")
     
     # Give next student if available
-    if student_number == "n":
+    if student_number == "n" or student_number == 'next':
         if questions.empty():
             print("No questions awaiting answers...")
             continue
@@ -81,13 +82,34 @@ while (True):
         continue
     
     # Report size of queue and ETA of tutor
-    if student_number == "s":
-        print("There are currently %d students with questions in the queue." +
-              "The estimated wait time is: TOO BE IMPLEMENTED" % 
-              (questions.qsize()))
+    if student_number == "s" or student_number == "size":
+        people = questions.qsize()
+        print(("There are currently %d students with questions in the queue." +
+              "\nThe estimated wait time is approximately: %G minute(s)") % 
+              (people, people * 1.5)) # TODO: make a better time estimator
+        continue
+
+    # Help for system
+    if student_number == "h" or student_number == "help":
+        print("""Practical Questions Help
+To queue a question, just type your student number (8 digits) at the prompt 
+with no 's'.
+
+Command     Short   Response
+help        h       Display this help page
+next        n       Pops the next student in the queue and displays their name
+size        s       Display the size of the queue and the expected wait time
+version     v       Display the version number of the program""")
+        continue
+
+    # Display version number
+    if student_number == 'v' or student_number == "version":
+        print("Practical Questions by Paul Haley\n\n\t Version: %d.%d.%d" % 
+                (version[0], version[1], version[2]))
+        continue
     
     # Screen dump remaining queue and quit
-    if student_number == "ADMIN DELETE THIS":
+    if student_number == "exit":
         print(questions)
         sys.exit()
     
@@ -106,7 +128,7 @@ while (True):
     # Student number unseen, add them
     if int(student_number) not in students.keys():
         print("Your student number is not recognised! If you think this is a" +
-              "fault, consult the tutors on duty.")
+              " fault, consult the tutors on duty.")
         continue
     
     # Number is of class student who is not already queued
