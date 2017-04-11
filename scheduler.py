@@ -5,6 +5,16 @@ from queue import *
 
 version = [0, 2, 2]
 
+"""Given number n, returns the appropriate suffix for the ordinal number."""
+def get_ordinal(n):
+    if (n - 11) % 100 != 0 and n % 10 == 1:
+        return "st"
+    if (n - 12) % 100 != 0 and n % 10 == 2:
+        return "nd"
+    if (n - 13) % 100 != 0 and n % 10 == 3:
+        return "rd"
+    return "th"
+
 def readEnrollment(students, arg):
     file = open(arg)
     practical = ""
@@ -133,8 +143,8 @@ version     v       Display the version number of the program""")
     
     # Number is of class student who is not already queued
     questions.put(int(student_number))
-    print("Your student number as been successfullly add!\n" + 
-          "Please wait until a tutor comes. You are %dth in the queue." % 
-          questions.qsize())
-    
+    n = questions.qsize()
+    print("Your student number as been successfullly added!\n" + 
+          "Please wait until a tutor comes. You are %d%s in the queue." % 
+          (n, get_ordinal(n)))
     
