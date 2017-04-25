@@ -49,6 +49,11 @@ first column and the student's first name in the 5th column.""" %
 
 
 # MAIN PROGRAM
+if len(argv) == 1: # no arguments given, print usage and exit
+    print("""Usage:
+scheduler.py class_list [class_list...]""")
+    sys.exit()
+
 students = {} # student ID -> student name
 # Reads each argument given to import all student IDs and names
 for i in range(len(argv) - 1):
