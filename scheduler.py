@@ -3,7 +3,7 @@ from sys import argv
 import sys
 from queue import *
 
-version = [0, 2, 2]
+version = [0, 2, 3]
 
 """Given number n, returns the appropriate suffix for the ordinal number."""
 def get_ordinal(n):
@@ -49,11 +49,13 @@ first column and the student's first name in the 5th column.""" %
 
 
 # MAIN PROGRAM
+print("Reading enrollment lists...")
 students = {} # student ID -> student name
 # Reads each argument given to import all student IDs and names
 for i in range(len(argv) - 1):
     readEnrollment(students, argv[i + 1])
-    
+print("%d students were found" % len(students))
+
 class InQueue(Queue):
     def __contains__(self, item):
         return item in self.queue
