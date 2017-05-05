@@ -1,9 +1,21 @@
+#!/usr/bin/env python3
+
 #from collections import namedtuple # student in Student datatype
 from sys import argv
 import sys
+import signal
 from queue import *
 
-version = [0, 2, 3]
+def signal_handler(signal, frame):
+    print("Do not use Ctrl + C\nAsk the tutor for assistance")
+    # Will re-print prompt as the program is likely waiting for input
+    print("\nPlease enter your student number: ", end='') 
+    
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler) #TODO: Implement proper handling
+
+version = [0, 3, 0]
+repo = "https://github.com/Paul-Haley/practical_questions"
 
 """Given number n, returns the appropriate suffix for the ordinal number."""
 def get_ordinal(n):
@@ -47,6 +59,15 @@ first column and the student's first name in the 5th column.""" %
 
 #Student = namedtuple("Student", "name class")
 
+"""Given the current Inqueue of student questions, print the current 
+estimated wait time."""
+def print_wait_time(queue):
+    eta = questions.qsize() * 1.5
+    print("The estimated wait time is approximately: %G minute(s)" % eta)
+    #TODO: better estimate
+    #TODO: take different actions based of excessive queue size (printing)
+
+
 
 # MAIN PROGRAM
 if len(argv) == 1: # no arguments given, print usage and exit
@@ -81,15 +102,20 @@ class InQueue(Queue):
     
 print("""Welcome to the Practical Questions tool!
       
-      This program was developed and is maintained by Paul Haley.
+      This program was developed and is maintained by Paul Haley at:
+      %s
       
-      Version: %d.%d.%d""" % (version[0], version[1], version[2]))
+      Version: %d.%d.%d""" % (repo, version[0], version[1], version[2]))
 
-questions = InQueue(70)
+questions = InQueue(70) # Check growth ability
 student_number = ""
 while (True):
     # Get input
-    student_number = input("\nPlease enter your student number: ")
+    try :
+        student_number = input("\nPlease enter your eight digit student number: ")
+    except EOFError: # Students will intentionally try to break things
+        print("Do not use Ctrl + D\nAsk the tutor for assistance")
+        continue
     
     # Give next student if available
     if student_number == "n" or student_number == 'next':
@@ -102,9 +128,9 @@ while (True):
     # Report size of queue and ETA of tutor
     if student_number == "s" or student_number == "size":
         people = questions.qsize()
-        print(("There are currently %d students with questions in the queue." +
-              "\nThe estimated wait time is approximately: %G minute(s)") % 
-              (people, people * 1.5)) # TODO: make a better time estimator
+        print("There are currently %d students with questions in the queue." %
+              (people))
+        print_wait_time(questions)
         continue
 
     # Help for system
@@ -117,19 +143,27 @@ Command     Short   Response
 help        h       Display this help page
 next        n       Pops the next student in the queue and displays their name
 size        s       Display the size of the queue and the expected wait time
-version     v       Display the version number of the program""")
+version     v       Display the version number of the program
+
+If you have found an issue with the software, please notify the tutors on duty
+and raise an issue on the tool's code repository:
+%s
+""" % (repo))
         continue
 
     # Display version number
     if student_number == 'v' or student_number == "version":
         print("Practical Questions by Paul Haley\n\n\t Version: %d.%d.%d" % 
                 (version[0], version[1], version[2]))
+        print("The source code can be found at:\n%s" % (repo))
         continue
     
     # Screen dump remaining queue and quit
     if student_number == "exit":
-        print(questions)
-        sys.exit()
+        if input("Are you sure (Y/n)? ") == 'Y':
+            print(questions)
+            sys.exit()
+        continue
     
     # Invalid student number
     if len(student_number) != 8 or not student_number.isnumeric() or \
@@ -139,8 +173,10 @@ version     v       Display the version number of the program""")
     
     # Student number already in queue.
     if int(student_number) in questions:
-        print("Your number is already in the queue! Your position is %d" % 
-              (questions.index(int(student_number)) + 1))
+        n = questions.index(int(student_number)) + 1
+        print("Your number is already in the queue! Your position is %d%s" % 
+              (n, get_ordinal(n)))
+        print_wait_time(questions)
         continue
     
     # Student number unseen, add them
@@ -156,3 +192,4 @@ version     v       Display the version number of the program""")
           "Please wait until a tutor comes. You are %d%s in the queue." % 
           (n, get_ordinal(n)))
     
+
