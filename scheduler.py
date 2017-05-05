@@ -6,16 +6,17 @@ import sys
 import signal
 from queue import *
 
+version = [0, 3, 1]
+repo = "https://github.com/Paul-Haley/practical_questions"
+prompt = "\nPlease enter your eight digit student number: "
+
 def signal_handler(signal, frame):
     print("Do not use Ctrl + C\nAsk the tutor for assistance")
     # Will re-print prompt as the program is likely waiting for input
-    print("\nPlease enter your student number: ", end='') 
+    print(prompt, end='') 
     
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler) #TODO: Implement proper handling
-
-version = [0, 3, 0]
-repo = "https://github.com/Paul-Haley/practical_questions"
 
 """Given number n, returns the appropriate suffix for the ordinal number."""
 def get_ordinal(n):
@@ -68,8 +69,7 @@ def print_wait_time(queue):
     #TODO: take different actions based of excessive queue size (printing)
 
 
-
-# MAIN PROGRAM
+# MAIN PROGRAM ***************************************************************
 if len(argv) == 1: # no arguments given, print usage and exit
     print("""Usage:
 scheduler.py class_list [class_list...]""")
@@ -81,7 +81,7 @@ students = {} # student ID -> student name
 # Reads each argument given to import all student IDs and names
 for i in range(len(argv) - 1):
     readEnrollment(students, argv[i + 1])
-print("%d students were found" % len(students))
+print("%d student(s) were found" % len(students))
 
 class InQueue(Queue):
     def __contains__(self, item):
@@ -112,9 +112,10 @@ student_number = ""
 while (True):
     # Get input
     try :
-        student_number = input("\nPlease enter your eight digit student number: ")
+        student_number = input(prompt)
     except EOFError: # Students will intentionally try to break things
         print("Do not use Ctrl + D\nAsk the tutor for assistance")
+        student_number = "" # clearing the bad input
         continue
     
     # Give next student if available
@@ -128,7 +129,7 @@ while (True):
     # Report size of queue and ETA of tutor
     if student_number == "s" or student_number == "size":
         people = questions.qsize()
-        print("There are currently %d students with questions in the queue." %
+        print("There are currently %d student(s) with questions in the queue." %
               (people))
         print_wait_time(questions)
         continue
