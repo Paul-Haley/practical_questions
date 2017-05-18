@@ -6,17 +6,27 @@ import sys
 import signal
 from queue import *
 
-version = [0, 3, 1]
+version = [0, 3, 2]
 repo = "https://github.com/Paul-Haley/practical_questions"
 prompt = "\nPlease enter your eight digit student number: "
 
-def signal_handler(signal, frame):
-    print("Do not use Ctrl + C\nAsk the tutor for assistance")
+def signal_handler(sig, frame):
+    if sig == signal.SIGINT:
+        key = 'C'
+    elif sig == signal.SIGQUIT:
+        key = '\\'
+    elif sig == signal.SIGTSTP:
+        key = 'Z'
+    else:
+        key = "anything"
+    print("\a\tDo not use Ctrl + %s\nAsk the tutor for assistance" % key)
     # Will re-print prompt as the program is likely waiting for input
     print(prompt, end='') 
     
-signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)    # ^C
 signal.signal(signal.SIGTERM, signal_handler) #TODO: Implement proper handling
+signal.signal(signal.SIGQUIT, signal_handler) # ^\
+signal.signal(signal.SIGTSTP, signal_handler) # ^Z
 
 """Given number n, returns the appropriate suffix for the ordinal number."""
 def get_ordinal(n):
